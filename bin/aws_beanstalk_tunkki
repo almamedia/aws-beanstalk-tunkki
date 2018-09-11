@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+
+require 'aws_beanstalk_tunkki'
+AWSBeanstalkTunkki.new.run_deployment()
