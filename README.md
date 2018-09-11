@@ -35,3 +35,30 @@ deploy:
   - provider: script
     script: sh ./aws-beanstalk-tunkki/start_deploy.sh "$app" "$TRAVIS_BRANCH" "$TRAVIS_BUILD_DIR" "$AWS_DEFAULT_REGION"
 ```
+
+### Example .travis.yml
+```
+language: ruby
+env:
+  global:
+  - app: my-cool-application
+  - platform: Ruby
+  - AWS_DEFAULT_REGION: eu-west-1
+  - secure: (AWS_ACCESS_KEY_ID_DEV=ABCDEFGH123456)
+  - secure: (AWS_SECRET_ACCESS_KEY_DEV=ABCDEFGH123456)
+branches:
+  only:
+  - "/^ft/"
+  - "/^dev/"
+  - "/^st/"
+  - "/^prod/"
+script: true
+before_deploy:
+  - git clone git@github.com:almamedia/aws-beanstalk-tunkki.git
+deploy:
+  - provider: script
+    script: sh ./aws-beanstalk-tunkki/start_deploy.sh "$app" "$TRAVIS_BRANCH" "$TRAVIS_BUILD_DIR" "$AWS_DEFAULT_REGION"
+    on:
+      all_branches: true
+      condition: "! $(git describe --all --exact-match) =~ ^heads/*"
+```
