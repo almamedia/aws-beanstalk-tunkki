@@ -28,7 +28,7 @@ travis encrypt AWS_SECRET_ACCESS_KEY_DEV=ABCDEFGH123456 --add
 2. Add the following to `.travis.yml`:
 ```
 before_deploy:
-  - git clone git@github.com:almamedia/aws-beanstalk-tunkki.git
+  - git clone https://github.com/almamedia/aws-beanstalk-tunkki.git
 ```
 ```
 deploy:
@@ -54,7 +54,7 @@ branches:
   - "/^prod/"
 script: true
 before_deploy:
-  - git clone git@github.com:almamedia/aws-beanstalk-tunkki.git
+  - git clone https://github.com/almamedia/aws-beanstalk-tunkki.git
 deploy:
   - provider: script
     script: sh ./aws-beanstalk-tunkki/start_deploy.sh "$app" "$TRAVIS_BRANCH" "$TRAVIS_BUILD_DIR" "$AWS_DEFAULT_REGION"
