@@ -221,7 +221,14 @@ class AWSBeanstalkTunkki
     @elasticbeanstalk.update_environment(
       {
         environment_name: "#{@app}-#{@bs_env}",
-        version_label: version_label
+        version_label: version_label,
+        option_settings: [
+          {
+            namespace: "aws:elasticbeanstalk:command",
+            option_name: "Timeout",
+            value: "1800",
+          }
+        ]
       })
     if (poll_for_environment_changes("#{@app}-#{@bs_env}") { |env| env.status != 'Updating' })
       puts "Updated '#{@app}-#{@bs_env}' environment successfully."
