@@ -139,15 +139,14 @@ class AWSBeanstalkTunkki
 
   def poll_for_environment_changes(env_name)
     print "Making changes to environment #{env_name}"
-    poll_interval = 10
-    thirty_minutes = (60 * 30) / poll_interval
-    thirty_minutes.times do |i|
+    ten_minutes = 60 * 10
+    ten_minutes.times do |i|
       if (yield(@elasticbeanstalk.describe_environments({environment_names: [env_name]}).environments.first))
         print "\n"
         return true
       else
         print '.'
-        sleep(poll_interval)
+        sleep(1)
       end
     end
     false
@@ -219,32 +218,16 @@ class AWSBeanstalkTunkki
 
   def update_environment(version_label)
     sleep(5) # Environment is in an invalid state for this operation. Must be Ready. (RuntimeError)
-    print 'Updating Beanstalk environment with new application version ..'
-    # Due to no STDOUT output during update_environment() call, we need to generate something
-    # so TravisCI or other CI tools won't timeout.
-    update_env_thread = Thread.new do
-      sleep(30) # Wait a little so update_environment() can start before we start polling
-      if (poll_for_environment_changes("#{@app}-#{@bs_env}") { |env| env.status != 'Updating' })
-        puts "Updated '#{@app}-#{@bs_env}' environment successfully."
-      else
-        raise "Timeout when updating environment."
-      end
-    end
-    # Attempt to update beanstalk environment with total timeout of 30+4 min
     @elasticbeanstalk.update_environment(
       {
         environment_name: "#{@app}-#{@bs_env}",
-        version_label: version_label,
-        option_settings: [
-          {
-            namespace: "aws:elasticbeanstalk:command",
-            option_name: "Timeout",
-            value: "1800",
-          }
-        ]
+        version_label: version_label
       })
-    update_env_thread.join
-    puts "Environment update complete!"
+    if (poll_for_environment_changes("#{@app}-#{@bs_env}") { |env| env.status != 'Updating' })
+      puts "Updated '#{@app}-#{@bs_env}' environment successfully."
+    else
+      raise "Timeout of 10 minutes reached when updating environment."
+    end
   rescue => e
     raise "Updating environment failed. Error: #{e}"
   end
