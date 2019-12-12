@@ -17,6 +17,17 @@ eg. elasticbeanstalk-eu-west-1-123456789
 eg. elasticbeanstalk-[region]-[account_number]
 ```
 
+### Usage from local machine
+```
+cd myproject
+git clone https://github.com/almamedia/aws-beanstalk-tunkki.git
+sh ./aws-beanstalk-tunkki/start_deploy.sh "myproject" "dev" "/home/user/myproject" "eu-west-1" "true"
+
+Once deployment is complete, clean up if you don't need aws-tunkki anymore:
+rm -rf aws-beanstalk-tunkki
+```
+
+
 ### Usage
 1. Encrypt appropriate IAM user access keys with travis encrypt:
 ```
