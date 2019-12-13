@@ -18,13 +18,10 @@ eg. elasticbeanstalk-[region]-[account_number]
 ```
 
 ### Usage from local machine
+Make sure to authenticate via aws-mfa and set `export AWS_PROFILE=my-dev-profile` environment variable first.
 ```
-cd myproject
-git clone https://github.com/almamedia/aws-beanstalk-tunkki.git
-sh ./aws-beanstalk-tunkki/start_deploy.sh "myproject" "dev" "/home/user/myproject" "eu-west-1" "true"
-
-Once deployment is complete, clean up if you don't need aws-tunkki anymore:
-rm -rf aws-beanstalk-tunkki
+user@localhost:~$ gem install aws_beanstalk_tunkki
+user@localhost:~$ aws_beanstalk_tunkki --app "myapp" --branch "dev" --dir "/home/user/myapp" --region "eu-west-1" --local "true"
 ```
 
 

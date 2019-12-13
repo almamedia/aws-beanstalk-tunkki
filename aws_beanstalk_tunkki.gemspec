@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'aws_beanstalk_tunkki'
-  s.version     = '1.0.1'
+  s.version     = '1.0.2'
   s.executables << 'aws_beanstalk_tunkki'
   s.date        = '2019-12-12'
   s.summary     = "AWS Beanstalk Tunkki"
