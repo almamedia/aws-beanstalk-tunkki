@@ -29,6 +29,7 @@ class AWSBeanstalkTunkki
       opt.on('--branch BRANCH_NAME') { |branch_name| @branch = branch_name }
       opt.on('--dir DIR') { |dir| @dir = dir }
       opt.on('--region REGION') { |aws_region| @aws_region = aws_region }
+      opt.on('--local LOCAL') { |local| @local = local }
     end.parse!
     raise "Beanstalk application (--app) required!" if @app.nil?
     raise "Git branch (--branch) required!" if @branch.nil?
@@ -59,11 +60,19 @@ class AWSBeanstalkTunkki
   end
 
   def set_aws_clients
-    aws_access_key_id, aws_secret_access_key = *get_aws_keys()
-    raise "AWS keys are not defined!" if aws_access_key_id.nil? || aws_secret_access_key.nil?
-    credentials       = Aws::Credentials.new(aws_access_key_id, aws_secret_access_key)
-    @elasticbeanstalk = Aws::ElasticBeanstalk::Client.new(region: @aws_region, credentials: credentials)
-    @s3 = Aws::S3::Client.new(region: @aws_region, credentials: credentials)
+    if @local == "true"
+      # Deploy from local machine, requires AWS_PROFILE environment variable to be set
+      # and aws-mfa based login before execution
+      raise "AWS_PROFILE environment varible is not set!" if ENV['AWS_PROFILE'].nil?
+      @elasticbeanstalk = Aws::ElasticBeanstalk::Client.new(region: @aws_region)
+      @s3 = Aws::S3::Client.new(region: @aws_region)
+    else
+      aws_access_key_id, aws_secret_access_key = *get_aws_keys()
+      raise "AWS keys are not defined!" if aws_access_key_id.nil? || aws_secret_access_key.nil?
+      credentials = Aws::Credentials.new(aws_access_key_id, aws_secret_access_key)
+      @elasticbeanstalk = Aws::ElasticBeanstalk::Client.new(region: @aws_region, credentials: credentials)
+      @s3 = Aws::S3::Client.new(region: @aws_region, credentials: credentials)
+    end
     bucket = @s3.list_buckets.buckets.find { |b| /\Aelasticbeanstalk-#{@aws_region}/ =~ b.name }
     raise "Could not resolve s3 bucket name." if bucket.nil?
     @s3_bucket_name = bucket.name
