@@ -17,6 +17,14 @@ eg. elasticbeanstalk-eu-west-1-123456789
 eg. elasticbeanstalk-[region]-[account_number]
 ```
 
+### Usage from local machine
+Make sure to authenticate via aws-mfa and set `export AWS_PROFILE=my-dev-profile` environment variable first.
+```
+user@localhost:~$ gem install aws_beanstalk_tunkki
+user@localhost:~$ aws_beanstalk_tunkki --app "myapp" --branch "dev" --dir "/home/user/myapp" --region "eu-west-1" --local "true"
+```
+
+
 ### Usage
 1. Encrypt appropriate IAM user access keys with travis encrypt:
 ```
