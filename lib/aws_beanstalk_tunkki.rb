@@ -47,8 +47,10 @@ class AWSBeanstalkTunkki
       set_application_environment_vars(environment: 'dev', env_simple: 'development')
     when /\Aft/
       set_application_environment_vars(environment: 'ft', env_simple: 'feature')
+    when /\Asb/
+      set_application_environment_vars(environment: 'sb', env_simple: 'sandbox')
     else
-      raise "Invalid deployment branch name detected! Branch name must start with prod, st, dev or ft"
+      raise "Invalid deployment branch name detected! Branch name must start with prod, st, dev, ft or sb"
     end
   end
 
@@ -84,6 +86,8 @@ class AWSBeanstalkTunkki
       [ENV['AWS_ACCESS_KEY_ID_PROD'], ENV['AWS_SECRET_ACCESS_KEY_PROD']]
     when 'dev', 'ft'
       [ENV['AWS_ACCESS_KEY_ID_DEV'], ENV['AWS_SECRET_ACCESS_KEY_DEV']]
+    when 'sb'
+      [ENV['AWS_ACCESS_KEY_ID_SB'], ENV['AWS_SECRET_ACCESS_KEY_SB']]
     end
   end
 
