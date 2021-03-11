@@ -21,7 +21,7 @@ eg. elasticbeanstalk-[region]-[account_number]
 Make sure to authenticate via aws-mfa and set `export AWS_PROFILE=my-dev-profile` environment variable first.
 ```
 user@localhost:~$ gem install aws_beanstalk_tunkki
-user@localhost:~$ aws_beanstalk_tunkki --app "myapp" --branch "dev" --dir "/home/user/myapp" --region "eu-west-1" --local "true"
+user@localhost:~$ aws_beanstalk_tunkki --app "myapp" --branch "dev" --dir "/home/user/myapp" --region "eu-west-1" --hosts "false" --local "true"
 ```
 
 
@@ -36,12 +36,32 @@ travis encrypt AWS_SECRET_ACCESS_KEY_DEV=ABCDEFGH123456 --add
 2. Add the following to `.travis.yml`:
 ```
 before_deploy:
-  - git clone https://github.com/almamedia/aws-beanstalk-tunkki.git
+- git clone https://github.com/almamedia/aws-beanstalk-tunkki.git
 ```
 ```
 deploy:
-  - provider: script
-    script: sh ./aws-beanstalk-tunkki/start_deploy.sh "$app" "$TRAVIS_BRANCH" "$TRAVIS_BUILD_DIR" "$AWS_DEFAULT_REGION"
+- provider: script
+  script: sh ./aws-beanstalk-tunkki/start_deploy.sh "$app" "$TRAVIS_BRANCH" "$TRAVIS_BUILD_DIR"
+    "$AWS_DEFAULT_REGION"
+```
+
+or something similar to this
+
+```
+before_deploy:
+- git clone https://github.com/almamedia/aws-beanstalk-tunkki.git
+- |
+  HOSTS="false"
+  if [[ "${TRAVIS_BRANCH}" == "ft"* ]]; then
+    REPO_NAME="${TRAVIS_REPO_SLUG#*/}"
+    HOSTS="${REPO_NAME}-${TRAVIS_BRANCH}.ft.il.fi"
+  fi
+```
+```
+deploy:
+- provider: script
+  script: sh ./aws-beanstalk-tunkki/start_deploy.sh "$app" "$TRAVIS_BRANCH" "$TRAVIS_BUILD_DIR"
+    "$AWS_DEFAULT_REGION" "$HOSTS"
 ```
 
 ### Example .travis.yml
