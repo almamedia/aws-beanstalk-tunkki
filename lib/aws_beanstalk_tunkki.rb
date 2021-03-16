@@ -147,7 +147,7 @@ class AWSBeanstalkTunkki
             option_settings: [
               {
                 resource_name: "elbv2",
-                namespace: "aws:elbv2:listenerrule:consumer",
+                namespace: "aws:elbv2:listenerrule:sharedalb",
                 option_name: "HostHeaders",
                 value: @hosts,
               },
