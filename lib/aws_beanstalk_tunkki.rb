@@ -29,6 +29,7 @@ class AWSBeanstalkTunkki
       opt.on('--branch BRANCH_NAME') { |branch_name| @branch = branch_name }
       opt.on('--dir DIR') { |dir| @dir = dir }
       opt.on('--region REGION') { |aws_region| @aws_region = aws_region }
+      opt.on('--hosts HOSTS') { |hosts| @hosts = hosts }
       opt.on('--local LOCAL') { |local| @local = local }
     end.parse!
     raise "Beanstalk application (--app) required!" if @app.nil?
@@ -126,13 +127,34 @@ class AWSBeanstalkTunkki
     puts "Launching new environment '#{@app}-#{@bs_env}' to application '#{@app}'."
 
     begin
-      @elasticbeanstalk.create_environment(
-        {
-          application_name: @app,
-          environment_name: app_bs_env,
-          cname_prefix:     app_bs_env,
-          template_name:    conf_template,
-        })
+      if @hosts.nil? || @hosts == "false"
+        puts "No added HostHeaders."
+        @elasticbeanstalk.create_environment(
+          {
+            application_name: @app,
+            environment_name: app_bs_env,
+            cname_prefix:     app_bs_env,
+            template_name:    conf_template,
+          })
+      else
+        puts "Add HostHeaders using '#{@hosts}'."
+        @elasticbeanstalk.create_environment(
+          {
+            application_name: @app,
+            environment_name: app_bs_env,
+            cname_prefix:     app_bs_env,
+            template_name:    conf_template,
+            option_settings: [
+              {
+                resource_name: "elbv2",
+                namespace: "aws:elbv2:listenerrule:sharedalb",
+                option_name: "HostHeaders",
+                value: @hosts,
+              },
+            ],
+          })
+      end
+
       if (poll_for_environment_changes(app_bs_env) { |env| env.status != 'Launching' })
         puts "Created environment '#{app_bs_env}'!"
       else
