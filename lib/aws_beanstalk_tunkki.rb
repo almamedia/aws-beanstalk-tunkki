@@ -82,14 +82,15 @@ class AWSBeanstalkTunkki
   end
 
   def get_aws_keys
-    case @environment
-    when 'prod', 'st'
-      [ENV['AWS_ACCESS_KEY_ID_PROD'], ENV['AWS_SECRET_ACCESS_KEY_PROD']]
-    when 'dev', 'ft'
-      [ENV['AWS_ACCESS_KEY_ID_DEV'], ENV['AWS_SECRET_ACCESS_KEY_DEV']]
-    when 'sb'
-      [ENV['AWS_ACCESS_KEY_ID_SB'], ENV['AWS_SECRET_ACCESS_KEY_SB']]
-    end
+    [ENV['AWS_ACCESS_KEY_ID'], ENV['AWS_SECRET_ACCESS_KEY']]
+    #case @environment
+    #when 'prod', 'st'
+    #  [ENV['AWS_ACCESS_KEY_ID_PROD'], ENV['AWS_SECRET_ACCESS_KEY_PROD']]
+    #when 'dev', 'ft'
+    #  [ENV['AWS_ACCESS_KEY_ID_DEV'], ENV['AWS_SECRET_ACCESS_KEY_DEV']]
+    #when 'sb'
+    #  [ENV['AWS_ACCESS_KEY_ID_SB'], ENV['AWS_SECRET_ACCESS_KEY_SB']]
+    #end
   end
 
   def get_bs_app
