@@ -82,8 +82,7 @@ class AWSBeanstalkTunkki
   end
 
   def get_aws_keys
-    case @local
-    when 'gha'
+    if @local == "gha"
       [ENV['AWS_ACCESS_KEY_ID'], ENV['AWS_SECRET_ACCESS_KEY']]
     end
     case @environment
