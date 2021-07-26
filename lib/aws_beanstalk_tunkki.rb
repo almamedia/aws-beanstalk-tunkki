@@ -82,9 +82,6 @@ class AWSBeanstalkTunkki
   end
 
   def get_aws_keys
-    if @local == "gha"
-      [ENV['AWS_ACCESS_KEY_ID'], ENV['AWS_SECRET_ACCESS_KEY']]
-    end
     case @environment
     when 'prod', 'st'
       [ENV['AWS_ACCESS_KEY_ID_PROD'], ENV['AWS_SECRET_ACCESS_KEY_PROD']]
@@ -92,6 +89,9 @@ class AWSBeanstalkTunkki
       [ENV['AWS_ACCESS_KEY_ID_DEV'], ENV['AWS_SECRET_ACCESS_KEY_DEV']]
     when 'sb'
       [ENV['AWS_ACCESS_KEY_ID_SB'], ENV['AWS_SECRET_ACCESS_KEY_SB']]
+    end
+    if @local == "gha"
+      [ENV['AWS_ACCESS_KEY_ID'], ENV['AWS_SECRET_ACCESS_KEY']]
     end
   end
 
