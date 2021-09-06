@@ -64,9 +64,9 @@ class AWSBeanstalkTunkki
 
   def set_aws_clients
     if @local == "true"
-      # Deploy from local machine, requires AWS_PROFILE environment variable to be set
-      # and aws-mfa based login before execution
-      raise "AWS_PROFILE environment varible is not set!" if ENV['AWS_PROFILE'].nil?
+      # Deploy from either local machine or Github Actions.
+      # On local machine it requires AWS_PROFILE environment variable to be set
+      # and aws-mfa based login before execution.
       @elasticbeanstalk = Aws::ElasticBeanstalk::Client.new(region: @aws_region)
       @s3 = Aws::S3::Client.new(region: @aws_region)
     else
