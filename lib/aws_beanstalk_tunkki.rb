@@ -227,6 +227,8 @@ class AWSBeanstalkTunkki
     `cd #{@dir}; zip #{zip_name} -r ./ -x *.git* *.log*`
     raise "Creating ZIP failed!" if $?.exitstatus != 0
     FileUtils.mv("#{@dir}/#{zip_name}", './')
+    file_size = (File.size("./#{zip_name}").to_f / 2**20).round(2)
+    print "ZIP file size is: #{file_size} MB"
     print "Done!\n"
     zip_name
   end
