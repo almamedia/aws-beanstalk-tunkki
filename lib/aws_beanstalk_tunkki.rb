@@ -174,14 +174,14 @@ class AWSBeanstalkTunkki
 
   def poll_for_environment_changes(env_name)
     print "Making changes to environment #{env_name}"
-    ten_minutes = 60 * 10
-    ten_minutes.times do |i|
+    thirty_minutes = 12 * 30
+    thirty_minutes.times do |i|
       if (yield(@elasticbeanstalk.describe_environments({environment_names: [env_name]}).environments.first))
         print "\n"
         return true
       else
         print '.'
-        sleep(1)
+        sleep(5)
       end
     end
     false
