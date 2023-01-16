@@ -168,7 +168,7 @@ class AWSBeanstalkTunkki
   def find_configuration_template(configuration_templates)
     configuration_templates.find do |tpl|
       /(?<conf_app_stub>[\w-]+)-(?<conf_env_stub>\w+)-\w+\z/ =~ tpl
-      conf_app_stub && conf_env_stub && @app.match(conf_app_stub) && @bs_env_simple.match(conf_env_stub)
+      conf_app_stub && conf_env_stub && @app.match(conf_app_stub) && @bs_env_simple.start_with?(conf_env_stub.slice(0, @bs_env_simple.size))
     end or raise "No configuration templates found, can't create environment."
   end
 
