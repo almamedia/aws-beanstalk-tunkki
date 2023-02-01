@@ -90,6 +90,9 @@ class AWSBeanstalkTunkki
     when 'sb'
       [ENV['AWS_ACCESS_KEY_ID_SB'], ENV['AWS_SECRET_ACCESS_KEY_SB']]
     end
+    if @local == "gha"
+      [ENV['AWS_ACCESS_KEY_ID'], ENV['AWS_SECRET_ACCESS_KEY']]
+    end
   end
 
   def get_bs_app
