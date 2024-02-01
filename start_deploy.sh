@@ -1,5 +1,5 @@
 #!/usr/bin/sh
-version=1.0.4
+version=1.0.5
 
 cd aws-beanstalk-tunkki
 gem build aws_beanstalk_tunkki.gemspec
