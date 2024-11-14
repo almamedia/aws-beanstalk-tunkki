@@ -14,7 +14,7 @@ class AWSBeanstalkTunkki
     if !check_bs_env()
       create_bs_env(application.configuration_templates)
     end
-    deploy_app(generate_version_label())
+    deploy_app(application, generate_version_label())
   end
 
   def init_deploy_variables
@@ -31,6 +31,7 @@ class AWSBeanstalkTunkki
       opt.on('--region REGION') { |aws_region| @aws_region = aws_region }
       opt.on('--hosts HOSTS') { |hosts| @hosts = hosts }
       opt.on('--local LOCAL') { |local| @local = local }
+      opt.on('--update-template UPDATE_TEMPLATE') { |update_template| @update_template = update_template }
     end.parse!
     raise "Beanstalk application (--app) required!" if @app.nil?
     raise "Git branch (--branch) required!" if @branch.nil?
@@ -199,11 +200,11 @@ class AWSBeanstalkTunkki
     raise "Application version launch failed. Error: #{e}"
   end
 
-  def deploy_app(version_label)
+  def deploy_app(app, version_label)
     puts "Deploying application to Beanstalk environment."
     s3_upload_details = upload_version_to_s3(version_label)
     create_app_version(version_label, s3_upload_details)
-    update_environment(version_label)
+    update_environment(app, version_label)
   end
 
   def upload_version_to_s3(version_label)
@@ -228,7 +229,7 @@ class AWSBeanstalkTunkki
     raise "Creating ZIP failed!" if $?.exitstatus != 0
     FileUtils.mv("#{@dir}/#{zip_name}", './')
     file_size = (File.size("./#{zip_name}").to_f / 2**20).round(2)
-    print "ZIP file size is: #{file_size} MB"
+    print "ZIP file size is: #{file_size} MB "
     print "Done!\n"
     zip_name
   end
@@ -253,20 +254,28 @@ class AWSBeanstalkTunkki
     raise "Creating application version '#{version_label}' failed. Error: #{e}"
   end
 
-  def update_environment(version_label)
+  def update_environment(application, version_label)
     sleep(5) # Environment is in an invalid state for this operation. Must be Ready. (RuntimeError)
-    @elasticbeanstalk.update_environment(
-      {
-        environment_name: "#{@app}-#{@bs_env}",
-        version_label: version_label,
-        option_settings: [
-          {
-            namespace: "aws:elasticbeanstalk:command",
-            option_name: "Timeout",
-            value: "1800",
-          }
-        ]
-      })
+
+    parameters = {
+      environment_name: "#{@app}-#{@bs_env}",
+      version_label: version_label,
+      option_settings: [
+        {
+          namespace: "aws:elasticbeanstalk:command",
+          option_name: "Timeout",
+          value: "1800",
+        }
+      ]
+    }
+
+    if @update_template == "true"
+      conf_template = find_configuration_template(application.configuration_templates)
+      puts "Using '#{conf_template}' configuration template."
+      parameters[:template_name] = conf_template
+    end
+
+    @elasticbeanstalk.update_environment(parameters)
     if (poll_for_environment_changes("#{@app}-#{@bs_env}") { |env| env.status != 'Updating' })
       puts "Updated '#{@app}-#{@bs_env}' environment successfully."
     else
