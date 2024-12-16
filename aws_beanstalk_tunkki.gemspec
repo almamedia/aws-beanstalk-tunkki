@@ -1,8 +1,8 @@
 Gem::Specification.new do |s|
   s.name        = 'aws_beanstalk_tunkki'
-  s.version     = '1.0.5'
+  s.version     = '1.0.6'
   s.executables << 'aws_beanstalk_tunkki'
-  s.date        = '2024-02-01'
+  s.date        = '2024-12-16'
   s.summary     = "AWS Beanstalk Tunkki"
   s.description = "Tool for deploying your app to AWS ElasticBeanstalk."
   s.authors     = ["Valtteri Pajunen", "Janne Saraste"]
